@@ -1,6 +1,7 @@
 [package]
-name = "neon-city"
+name = "data_heist_bevy"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+bevy = "0.14"

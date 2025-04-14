@@ -1,0 +1,16 @@
+to run the file
+nix-shell --run "cargo run"
+
+to delete garbage
+sudo nix-collect-garbage -d
+
+to delete a  specific old checkpoint
+sudo nix-env --delete-generations 'number-to-delete'
+
+to delete all the checkpoints
+sudo nix-env --delete-generations old
+
+to list all the checkpoints
+sudo nix-env --list-generations
+
+
