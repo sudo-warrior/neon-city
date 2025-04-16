@@ -146,19 +146,19 @@ def create_neotech_rooms(neotech_objects, materials, interior_materials):
                 )
                 barrier = bpy.context.active_object
                 barrier.name = f"NeoTech_Security_Barrier_{i}"
-                
-                # Scale barrier
-                barrier.scale.x = 0.1
-                barrier.scale.y = floor_radius * 0.6
-                barrier.scale.z = 1.0
-                
-                # Apply scale
-                bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-                
-                # Assign material
-                barrier.data.materials.append(interior_materials["NeoTech_Interior"])
-                
-                room_objects.append(barrier)
+            
+            # Scale barrier
+            barrier.scale.x = 0.1
+            barrier.scale.y = floor_radius * 0.6
+            barrier.scale.z = 1.0
+            
+            # Apply scale
+            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+            
+            # Assign material
+            barrier.data.materials.append(interior_materials["NeoTech_Interior"])
+            
+            room_objects.append(barrier)
             
             # Create security scanner
             bpy.ops.mesh.primitive_cylinder_add(
@@ -514,9 +514,9 @@ def create_neotech_rooms(neotech_objects, materials, interior_materials):
             chair.name = "NeoTech_Executive_Chair"
             
             # Scale chair
-            chair.scale.x = 0.4
-            chair.scale.y = 0.4
-            chair.scale.z = 0.4
+            chair.scale.x = 0.6
+            chair.scale.y = 0.6
+            chair.scale.z = 1.0
             
             # Apply scale
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
@@ -691,51 +691,34 @@ def create_specter_rooms(specter_objects, materials, interior_materials):
             stall_count = 8
             for i in range(stall_count):
                 angle = i * (2 * math.pi / stall_count)
-                stall_x = tower_loc[0] + floor_radius * 0.7 * math.cos(angle)
-                stall_y = tower_loc[1] + floor_radius * 0.7 * math.sin(angle)
+                stall_x = tower_loc[0] + (tower_radius * 1.5) * math.cos(angle)
+                stall_y = tower_loc[1] + (tower_radius * 1.5) * math.sin(angle)
                 
                 # Create stall base
                 bpy.ops.mesh.primitive_cube_add(
                     size=1.0,
-                    enter_editmode=True,
+                    enter_editmode=False,
                     align='WORLD',
                     location=(stall_x, stall_y, floor_z + 0.5)
                 )
                 stall = bpy.context.active_object
-                stall.name = f"Specter_Market_Stall_{i}"
-                
-                # Edit the stall to make it look makeshift
-                bm = bmesh.from_edit_mesh(stall.data)
+                stall.name = f"Specter_MarketStall_{i}"
                 
                 # Scale stall
-                for v in bm.verts:
-                    v.co.x *= 2.0
-                    v.co.y *= 1.5
-                    v.co.z *= 1.0
-                
-                # Distort vertices slightly for makeshift look
-                for v in bm.verts:
-                    if random.random() > 0.7:
-                        v.co.x += random.uniform(-0.1, 0.1)
-                        v.co.y += random.uniform(-0.1, 0.1)
-                        v.co.z += random.uniform(-0.1, 0.1)
-                
-                # Update mesh
-                bmesh.update_edit_mesh(stall.data)
-                bpy.ops.object.mode_set(mode='OBJECT')
+                stall.scale.x = 2.0
+                stall.scale.y = 1.5
+                stall.scale.z = 1.0
                 
                 # Rotate to face center
                 direction = Vector((tower_loc[0], tower_loc[1], 0)) - Vector((stall_x, stall_y, 0))
                 rot_quat = direction.to_track_quat('Y', 'Z')
                 stall.rotation_euler = rot_quat.to_euler()
                 
-                # Apply rotation
-                bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+                # Apply transformations
+                bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
                 
                 # Assign material
                 stall.data.materials.append(interior_materials["Specter_Interior"])
-                
-                room_objects.append(stall)
                 
                 # Create stall canopy
                 bpy.ops.mesh.primitive_cube_add(
@@ -745,7 +728,7 @@ def create_specter_rooms(specter_objects, materials, interior_materials):
                     location=(stall_x, stall_y, floor_z + 1.5)
                 )
                 canopy = bpy.context.active_object
-                canopy.name = f"Specter_Stall_Canopy_{i}"
+                canopy.name = f"Specter_StallCanopy_{i}"
                 
                 # Edit the canopy
                 bm = bmesh.from_edit_mesh(canopy.data)
@@ -756,23 +739,16 @@ def create_specter_rooms(specter_objects, materials, interior_materials):
                     v.co.y *= 1.7
                     v.co.z *= 0.1
                 
-                # Distort vertices for worn look
-                for v in bm.verts:
-                    if random.random() > 0.5:
-                        v.co.z += random.uniform(-0.05, 0.05)
-                
-                # Update mesh
-                bmesh.update_edit_mesh(canopy.data)
-                bpy.ops.object.mode_set(mode='OBJECT')
-                
                 # Rotate to face center
-                canopy.rotation_euler = stall.rotation_euler
+                direction = Vector((tower_loc[0], tower_loc[1], 0)) - Vector((stall_x, stall_y, 0))
+                rot_quat = direction.to_track_quat('Y', 'Z')
+                canopy.rotation_euler = rot_quat.to_euler()
                 
-                # Apply rotation
-                bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+                # Apply transformations
+                bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
                 
-                # Create canopy material with random color
-                canopy_material = bpy.data.materials.new(name=f"Specter_CanopyMaterial_{i}")
+                # Assign material with random color
+                canopy_material = bpy.data.materials.new(name=f"StallCanopy_{i}")
                 canopy_material.use_nodes = True
                 nodes = canopy_material.node_tree.nodes
                 links = canopy_material.node_tree.links
@@ -783,13 +759,37 @@ def create_specter_rooms(specter_objects, materials, interior_materials):
                 
                 # Create nodes
                 output = nodes.new(type='ShaderNodeOutputMaterial')
-                principled = nodes.new(type='ShaderNodeBsdfPrincipled')
+                emission = nodes.new(type='ShaderNodeEmission')
                 
                 # Set random color
-                r = random.uniform(0.2, 0.8)
-                g = random.uniform(0.2, 0.8)
-                b = random.uniform(0.2, 0.8)
-                principled.inputs['Base Color'].default_value = (r, g, b, 1.0)
+                r = random.uniform(0.5, 1.0)
+                g = random.uniform(0.5, 1.0)
+                b = random.uniform(0.5, 1.0)
+                emission.inputs['Color'].default_value = (r, g, b, 1.0)
+                emission.inputs['Strength'].default_value = 1.0
+                
+                # Connect nodes
+                links.new(emission.outputs['Emission'], output.inputs['Surface'])
+                
+                canopy.data.materials.append(canopy_material)
+                
+                room_objects.append(stall)
+                room_objects.append(canopy)
+            
+        elif floor_name == "Living":
+            # Create maintenance tunnels/living quarters
+            tunnel_count = 4
+            for i in range(tunnel_count):
+                angle = i * (2 * math.pi / tunnel_count) + math.pi/tunnel_count
+                tunnel_x = tower_loc[0] + (tower_radius * 1.8) * math.cos(angle)
+                tunnel_y = tower_loc[1] + (tower_radius * 1.8) * math.sin(angle)
+                
+                # Calculate tunnel direction
+                direction = Vector((tunnel_x, tunnel_y, 0)) - Vector((tower_loc[0], tower_loc[1], 0))
+                direction.normalize()
+                
+                # Create tunnel entrance
+                bpy.ops.mesh
                 principled.inputs['Roughness'].default_value = 0.8
                 
                 # Connect nodes
@@ -5829,7 +5829,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         
         # Assign material
-        floor.data.materials.append(interior_materials["MilitechArmory_Interior"])
+        floor.data.materials.append(interior_materials["Militech_Interior"])
         
         room_objects.append(floor)
         
@@ -5852,7 +5852,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         
         # Assign material
-        ceiling.data.materials.append(interior_materials["MilitechArmory_Interior"])
+        ceiling.data.materials.append(interior_materials["Militech_Interior"])
         
         room_objects.append(ceiling)
         
@@ -5902,7 +5902,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
             bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
             
             # Assign material
-            wall.data.materials.append(interior_materials["MilitechArmory_Interior"])
+            wall.data.materials.append(interior_materials["Militech_Interior"])
             
             room_objects.append(wall)
         
@@ -5927,7 +5927,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
             
             # Assign material
-            desk.data.materials.append(interior_materials["MilitechArmory_Interior"])
+            desk.data.materials.append(interior_materials["Militech_Interior"])
             
             room_objects.append(desk)
             
@@ -5955,7 +5955,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                 
                 # Assign material
-                scanner_base.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                scanner_base.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(scanner_base)
                 
@@ -6087,7 +6087,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 camera_base.name = f"MilitechArmory_Camera_Base_{i}"
                 
                 # Assign material
-                camera_base.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                camera_base.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(camera_base)
                 
@@ -6112,7 +6112,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
                 
                 # Assign material
-                camera_body.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                camera_body.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(camera_body)
                 
@@ -6183,7 +6183,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
             
             # Assign material
-            waiting_area.data.materials.append(interior_materials["MilitechArmory_Interior"])
+            waiting_area.data.materials.append(interior_materials["Militech_Interior"])
             
             room_objects.append(waiting_area)
             
@@ -6210,7 +6210,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                 
                 # Assign material
-                chair.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                chair.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(chair)
             
@@ -6475,7 +6475,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                 
                 # Assign material
-                divider.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                divider.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(divider)
                 
@@ -6502,7 +6502,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                     
                     # Assign material
-                    position.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                    position.data.materials.append(interior_materials["Militech_Interior"])
                     
                     room_objects.append(position)
                     
@@ -6525,7 +6525,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                     
                     # Assign material
-                    rest.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                    rest.data.materials.append(interior_materials["Militech_Interior"])
                     
                     room_objects.append(rest)
                     
@@ -6598,7 +6598,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                 
                 # Assign material
-                target_base.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                target_base.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(target_base)
                 
@@ -6701,7 +6701,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
             
             # Assign material
-            control_room.data.materials.append(interior_materials["MilitechArmory_Interior"])
+            control_room.data.materials.append(interior_materials["Militech_Interior"])
             
             room_objects.append(control_room)
             
@@ -6772,7 +6772,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
             
             # Assign material
-            workbench.data.materials.append(interior_materials["MilitechArmory_Interior"])
+            workbench.data.materials.append(interior_materials["Militech_Interior"])
             
             room_objects.append(workbench)
             
@@ -7392,7 +7392,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 scanner_base.name = f"MilitechArmory_Vault_Scanner_{i}"
                 
                 # Assign material
-                scanner_base.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                scanner_base.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(scanner_base)
                 
@@ -7451,7 +7451,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 turret_base.name = f"MilitechArmory_Security_Turret_Base_{i}"
                 
                 # Assign material
-                turret_base.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                turret_base.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(turret_base)
                 
@@ -7474,7 +7474,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                 
                 # Assign material
-                turret_body.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                turret_body.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(turret_body)
                 
@@ -7499,7 +7499,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
                 
                 # Assign material
-                turret_barrel.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                turret_barrel.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(turret_barrel)
             
@@ -7822,7 +7822,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                 
                 # Assign material
-                mount.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                mount.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(mount)
             
@@ -7995,7 +7995,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                 
                 # Assign material
-                elevator.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                elevator.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(elevator)
                 
@@ -8080,7 +8080,7 @@ def create_militech_armory_rooms(militech_objects, materials, interior_materials
                 bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
                 
                 # Assign material
-                corridor_obj.data.materials.append(interior_materials["MilitechArmory_Interior"])
+                corridor_obj.data.materials.append(interior_materials["Militech_Interior"])
                 
                 room_objects.append(corridor_obj)
     

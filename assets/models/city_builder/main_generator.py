@@ -173,9 +173,35 @@ def run_generation():
         print("Building generation returned no data or failed. Aborting.")
         return
 
-    all_materials = generated_data.get("materials", {}) # Get the materials dict
+    all_materials = generated_data.get("materials", {}) # Get the INITIAL materials dict
+    print(f"Initial materials from building.py: {list(all_materials.keys())}")
 
-    print("\nBuilding generation finished.")
+
+    # --- <<< NEW SECTION: Create and Merge Interior Materials >>> ---
+    print("Generating interior materials...")
+    try:
+        # Check if the function exists before calling
+        if hasattr(building_interiors, 'create_interior_materials'):
+            interior_mats_dict = building_interiors.create_interior_materials()
+            if interior_mats_dict:
+                print(f" -> Generated interior materials: {list(interior_mats_dict.keys())}")
+                # Merge the interior materials into the main dictionary
+                all_materials.update(interior_mats_dict)
+                print(f" -> Merged materials. Current all_materials: {list(all_materials.keys())}")
+            else:
+                print(" -> Warning: create_interior_materials returned nothing.")
+        else:
+            print("ERROR: Module 'building_interiors' is missing the function 'create_interior_materials'. Cannot create interior materials.")
+            # Depending on your design, you might want to return or raise an error here
+            # For now, we let it continue, but subsequent steps will likely fail with KeyErrors.
+
+    except Exception as e:
+        print("\n--- ERROR DURING INTERIOR MATERIAL CREATION ---")
+        traceback.print_exc()
+        print("-----------------------------------------------")
+        # Decide if we should abort here, maybe return?
+        return
+    # --- <<< END NEW SECTION >>> ---
 
 
     # 2. Implement Interiors
@@ -185,15 +211,15 @@ def run_generation():
              print(f"ERROR: Module 'building_interiors' does not have function 'implement_building_interiors'")
              # Decide if this is critical - maybe just skip?
         else:
-             # Pass generated_data (contains building objects) and the materials dict
+             # Pass generated_data (contains building objects) and the NOW MERGED materials dict
+             # Note: implement_building_interiors might internally re-create its own combined dict,
+             # but that's okay as long as it finds the materials it needs within the passed dict.
+             # Its return value is still ignored here as per the original design.
             building_interiors.implement_building_interiors(
                 generated_data,
-                all_materials
+                all_materials # Pass the merged dictionary
             )
             print("\nInterior implementation finished.")
-            # NOTE: implement_building_interiors might create *new* interior materials.
-            # If subsequent steps need those, they should ideally be added to the
-            # main 'all_materials' dict or returned and merged. For now, assume they modify bpy.data directly.
 
     except Exception as e: # Catch any error during interior implementation
         print(f"\n--- An unexpected error occurred during interior implementation: ---")
@@ -204,58 +230,62 @@ def run_generation():
 
     # --- <<< INTEGRATION POINT FOR ROOMS >>> ---
     print("Running room generation...")
-    try:
-        if building_rooms: # Check if module was loaded
-            if not hasattr(building_rooms, 'implement_building_rooms'):
-                 print(f"ERROR: Module 'building_rooms' does not have function 'implement_building_rooms'")
+    print(f"generated_data: {generated_data}")
+    if generated_data:
+        try:
+            if building_rooms: # Check if module was loaded
+                if not hasattr(building_rooms, 'implement_building_rooms'):
+                     print(f"ERROR: Module 'building_rooms' does not have function 'implement_building_rooms'")
+                else:
+                     # Call the function, passing generated data and the MERGED materials
+                     building_rooms.implement_building_rooms(
+                          generated_data.get("building_objects"),
+                          all_materials, # Pass the merged dict
+                          all_materials  # Pass the merged dict again as the expected interior_materials
+                     )
+                     print("\nRoom generation finished.")
             else:
-                 # Call the function, passing generated data and the combined materials
-                 # Assuming implement_building_rooms uses the same lowercase keys
-                 building_rooms.implement_building_rooms(
-                      generated_data,
-                      all_materials,
-                      #interior_materials
-                 )
-                 print("\nRoom generation finished.")
-        else:
-             print("Skipping room generation - module not loaded.")
-    except Exception as e:
-         print("\n--- ERROR DURING ROOM GENERATION ---")
-         traceback.print_exc()
-         print("------------------------------------")
-         # Decide whether to continue
+                 print("Skipping room generation - module not loaded.")
+        except Exception as e:
+             print("\n--- ERROR DURING ROOM GENERATION ---")
+             traceback.print_exc()
+             print("------------------------------------")
+             # Decide whether to continue
+    else:
+        print("Skipping room generation - generated_data is None.")
     # --- <<< END ROOMS INTEGRATION >>> ---
 
 
     # --- <<< INTEGRATION POINT FOR WINDOWS >>> ---
     print("Running window generation...")
-    try:
-        if building_windows: # Check if module was loaded
-             if not hasattr(building_windows, 'implement_building_windows'):
-                  print(f"ERROR: Module 'building_windows' does not have function 'implement_building_windows'")
-                  # Make sure the function name here is correct for your building_windows.py file
-             else:
-                  # Call the function, passing generated data and the combined materials
-                  # Assuming implement_building_windows uses the same lowercase keys
-                  building_windows.implement_building_windows(
-                       generated_data,
-                       all_materials,
-                       #interior_materials
-                  )
-                  print("\nWindow generation finished.")
-        else:
-             print("Skipping window generation - module not loaded.")
-    except Exception as e:
-         print("\n--- ERROR DURING WINDOW GENERATION ---")
-         traceback.print_exc()
-         print("--------------------------------------")
-         # Decide whether to continue
+    print(f"generated_data: {generated_data}")
+    if generated_data:
+        try:
+            if building_windows: # Check if module was loaded
+                 if not hasattr(building_windows, 'implement_building_windows'):
+                      print(f"ERROR: Module 'building_windows' does not have function 'implement_building_windows'")
+                 else:
+                      # Call the function, passing generated data and the MERGED materials
+                      building_windows.implement_building_windows(
+                           generated_data.get("building_objects"),
+                           all_materials, # Pass the merged dict
+                           all_materials  # Pass the merged dict again as the expected interior_materials
+                      )
+                      print("\nWindow generation finished.")
+            else:
+                 print("Skipping window generation - module not loaded.")
+        except Exception as e:
+             print("\n--- ERROR DURING WINDOW GENERATION ---")
+             traceback.print_exc()
+             print("--------------------------------------")
+             # Decide whether to continue
+    else:
+        print("Skipping window generation - generated_data is None.")
     # --- <<< END WINDOWS INTEGRATION >>> ---
 
 
     print("\n--- Generation Complete ---")
     print("Note: Hide exterior objects (H) or use Local View (Numpad /) to see interiors, rooms, windows.")
-
 
 
 # --- Run the Main Function ---

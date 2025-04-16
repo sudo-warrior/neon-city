@@ -4807,7 +4807,7 @@ def implement_building_interiors(building_objects, materials):
 
 	# Militech Armory
     if "militech_armory" in building_objects:
-	    interiors["MilitechArmory_Interior"] = create_militech_armory_interior(
+	    interiors["Militech_Interior"] = create_militech_armory_interior(
             building_objects["militech_armory"],
             all_materials,
             interior_materials

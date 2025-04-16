@@ -258,7 +258,7 @@ def create_specter_windows(specter_objects, materials, interior_materials):
             principled.inputs['Base Color'].default_value = (0.8, 0.8, 0.8, 1.0)  # Light gray
             principled.inputs['Metallic'].default_value = 0.1
             principled.inputs['Roughness'].default_value = 0.2
-            principled.inputs['Transmission'].default_value = 0.8  # Mostly transparent
+            #principled.inputs['Transmission'].default_value = 0.8  # Mostly transparent
             principled.inputs['IOR'].default_value = 1.45
             
             # Connect nodes
@@ -447,7 +447,7 @@ def create_black_nexus_windows(black_nexus_objects, materials, interior_material
         principled.inputs['Base Color'].default_value = (0.02, 0.02, 0.02, 1.0)  # Very dark
         principled.inputs['Metallic'].default_value = 0.1
         principled.inputs['Roughness'].default_value = 0.3
-        principled.inputs['Transmission'].default_value = 0.5  # Semi-transparent
+        #principled.inputs['Transmission'].default_value = 0.5  # Semi-transparent
         principled.inputs['IOR'].default_value = 1.45
         
         # Connect nodes
@@ -663,7 +663,7 @@ def create_wire_nest_windows(wire_nest_objects, materials, interior_materials):
         principled.inputs['Base Color'].default_value = (0.05, 0.05, 0.1, 1.0)  # Very dark blue
         principled.inputs['Metallic'].default_value = 0.1
         principled.inputs['Roughness'].default_value = 0.3
-        principled.inputs['Transmission'].default_value = 0.4  # Semi-transparent
+        #principled.inputs['Transmission'].default_value = 0.4  # Semi-transparent
         principled.inputs['IOR'].default_value = 1.45
         
         # Connect nodes
@@ -914,7 +914,7 @@ def create_rust_vault_windows(rust_vault_objects, materials, interior_materials)
         principled.inputs['Base Color'].default_value = (0.3, 0.3, 0.3, 1.0)  # Gray
         principled.inputs['Metallic'].default_value = 0.0
         principled.inputs['Roughness'].default_value = 0.7
-        principled.inputs['Transmission'].default_value = 0.3  # Slightly transparent
+        #principled.inputs['Transmission'].default_value = 0.3  # Slightly transparent
         principled.inputs['IOR'].default_value = 1.45
         
         noise.inputs['Scale'].default_value = 20.0
@@ -1053,6 +1053,7 @@ def create_militech_windows(militech_objects, materials, interior_materials):
         
         # Make it hollow
         inner_verts = []
+        bm.verts.ensure_lookup_table()
         for j in range(8):
             inner_vert = bm.verts.new((
                 0.9 * bm.verts[j].co.x,
@@ -1061,6 +1062,7 @@ def create_militech_windows(militech_objects, materials, interior_materials):
             ))
             inner_verts.append(inner_vert)
         
+        bm.faces.ensure_lookup_table()
         # Create faces for inner cutout
         for j in range(4):
             bm.faces.new([inner_verts[j], inner_verts[(j+1)%4], inner_verts[(j+1)%4+4], inner_verts[j+4]])
@@ -1128,7 +1130,7 @@ def create_militech_windows(militech_objects, materials, interior_materials):
         principled.inputs['Base Color'].default_value = (0.8, 0.8, 0.8, 1.0)  # Light gray
         principled.inputs['Metallic'].default_value = 0.2
         principled.inputs['Roughness'].default_value = 0.1
-        principled.inputs['Transmission'].default_value = 0.7  # Transparent
+        #principled.inputs['Transmission'].default_value = 0.7  # Transparent
         principled.inputs['IOR'].default_value = 1.5  # Higher IOR for bulletproof glass
         
         # Connect nodes
@@ -1298,7 +1300,7 @@ def create_biotechnica_windows(biotechnica_objects, materials, interior_material
         principled.inputs['Base Color'].default_value = (0.1, 0.3, 0.2, 1.0)  # Green-tinted
         principled.inputs['Metallic'].default_value = 0.3
         principled.inputs['Roughness'].default_value = 0.1
-        principled.inputs['Transmission'].default_value = 0.8  # Mostly transparent
+        #principled.inputs['Transmission'].default_value = 0.8  # Mostly transparent
         principled.inputs['IOR'].default_value = 1.45
         
         # Connect nodes
@@ -1379,5 +1381,23 @@ def implement_building_windows(building_objects, materials, interior_materials):
             materials,
             interior_materials
         )
+    
+    # Move all objects to the windows collection
+    for building_name, window_collection in windows.items():
+        if window_collection:
+            for obj in window_collection.objects:
+                # Determine the correct rooms collection name based on the building name
+                rooms_collection_name = building_name.replace("Windows", "Rooms")
+                # Find the rooms collection
+                rooms_collection = bpy.data.collections.get(rooms_collection_name)
+                if rooms_collection:
+                    # Move the object to the rooms collection
+                    bpy.ops.object.select_all(action='DESELECT')
+                    obj.select_set(True)
+                    bpy.context.view_layer.objects.active = obj
+                    bpy.ops.object.move_to_collection(collection_index=bpy.data.collections.find(rooms_collection.name))
+                    print(f"Info: {obj.name} moved to {rooms_collection.name}")
+                else:
+                    print(f"Warning: Rooms collection '{rooms_collection_name}' not found for {building_name}.")
     
     return windows

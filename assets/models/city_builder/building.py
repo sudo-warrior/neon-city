@@ -1818,6 +1818,29 @@ def generate_neon_crucible_buildings():
     camera.name = "Landmark_View_Camera"
     bpy.context.scene.camera = camera
 
+    print("Generating building interiors...")
+    building_objects = {
+        "neotech_tower": {"building": neotech_tower["tower"], "collection": neotech_tower["collection"]},
+        "specter_station": {"building": specter_station["tower"], "collection": specter_station["collection"]},
+        "black_nexus": {"building": black_nexus["station"], "collection": black_nexus["collection"]},
+        "wire_nest": {"building": wire_nest["frame"], "collection": wire_nest["collection"]},
+        "rust_vault": {"building": rust_vault["door"], "collection": rust_vault["collection"]},
+        "militech_armory": {"building": militech_armory["fortress"], "collection": militech_armory["collection"]},
+        "biotechnica_spire": {"building": biotechnica_spire["tower"], "collection": biotechnica_spire["collection"]},
+    }
+    try:
+        building_interiors = building_interiors_module.implement_building_interiors(building_objects, materials)
+    except Exception as e:
+        print(f"Error generating building interiors: {e}")
+        building_interiors = {}
+
+    print("Generating building windows...")
+    try:
+        building_windows = building_windows_module.implement_building_windows(building_objects, materials, building_interiors)
+    except Exception as e:
+        print(f"Error generating building windows: {e}")
+        building_windows = {}
+
     print("\nNeon Crucible specific buildings generation complete!")
 
     return {
@@ -1831,9 +1854,17 @@ def generate_neon_crucible_buildings():
         "militech_armory": militech_armory,
         "biotechnica_spire": biotechnica_spire,
         "ground": ground,
-        "camera": camera
+        "camera": camera,
+        "building_objects": building_objects,
+        "building_interiors": building_interiors,
+        "building_windows": building_windows
     }
+
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Execute the script if run directly from Blender's text editor
 if __name__ == "__main__":
+    import building_interiors as building_interiors_module
+    import building_windows as building_windows_module
     generate_neon_crucible_buildings()
