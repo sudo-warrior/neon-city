@@ -946,7 +946,10 @@ def create_militech_windows(militech_objects, materials, interior_materials):
     # Extract objects from the militech_objects dictionary
     building = militech_objects.get("building")
     collection = militech_objects.get("collection")
-    
+
+    bm = bmesh.from_edit_mesh(bpy.context.active_object.data)
+    bm.verts.ensure_lookup_table()
+
     if not building or not collection:
         print("Error: Missing required Militech Armory objects")
         return None
@@ -1053,6 +1056,7 @@ def create_militech_windows(militech_objects, materials, interior_materials):
         
         # Make it hollow
         inner_verts = []
+        bm.faces.ensure_lookup_table()
         bm.verts.ensure_lookup_table()
         for j in range(8):
             inner_vert = bm.verts.new((
@@ -1061,12 +1065,18 @@ def create_militech_windows(militech_objects, materials, interior_materials):
                 0.9 * bm.verts[j].co.z
             ))
             inner_verts.append(inner_vert)
-        
-        bm.faces.ensure_lookup_table()
+
+        bm.verts.ensure_lookup_table()  # Update after adding new vertices
+
         # Create faces for inner cutout
         for j in range(4):
-            bm.faces.new([inner_verts[j], inner_verts[(j+1)%4], inner_verts[(j+1)%4+4], inner_verts[j+4]])
-        
+            bm.faces.new([
+                inner_verts[j],
+                inner_verts[(j+1)%4],
+                inner_verts[(j+1)%4+4],
+                inner_verts[j+4]
+            ])
+
         # Update mesh
         bmesh.update_edit_mesh(window_accent.data)
         bpy.ops.object.mode_set(mode='OBJECT')
