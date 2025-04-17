@@ -102,7 +102,7 @@ def create_interior_materials():
     principled.inputs['Base Color'].default_value = (0.8, 0.8, 0.9, 1.0)  # Light blue tint
     principled.inputs['Metallic'].default_value = 0.1
     principled.inputs['Roughness'].default_value = 0.05
-    #principled.inputs['Transmission'].default_value = 0.95  # Almost fully transparent
+    principled.inputs['Transmission Weight'].default_value = 0.95  # Almost fully transparent
     principled.inputs['IOR'].default_value = 1.45
     
     # Connect nodes
@@ -2291,7 +2291,7 @@ def create_biotechnica_spire_interior(biotechnica_objects, materials, interior_m
     principled.inputs['Base Color'].default_value = (0.1, 0.3, 0.2, 1.0)  # Green-tinted
     principled.inputs['Metallic'].default_value = 0.5
     principled.inputs['Roughness'].default_value = 0.2
-    #principled.inputs['Transmission'].default_value = 0.3  # Slightly transparent
+    principled.inputs['Transmission Weight'].default_value = 0.3  # Slightly transparent
     principled.inputs['IOR'].default_value = 1.45
     
     # Connect nodes
@@ -2598,7 +2598,7 @@ def create_biotechnica_spire_interior(biotechnica_objects, materials, interior_m
     principled.inputs['Base Color'].default_value = (0.1, 0.3, 0.4, 1.0)  # Blue-green
     principled.inputs['Metallic'].default_value = 0.0
     principled.inputs['Roughness'].default_value = 0.1
-    #SSprincipled.inputs['Transmission'].default_value = 0.8
+    principled.inputs['Transmission Weight'].default_value = 0.8
     principled.inputs['IOR'].default_value = 1.33  # Water IOR
     
     # Connect nodes
@@ -2742,7 +2742,7 @@ def create_biotechnica_spire_interior(biotechnica_objects, materials, interior_m
             principled.inputs['Base Color'].default_value = (0.9, 0.9, 0.9, 1.0)  # White
             principled.inputs['Metallic'].default_value = 0.0
             principled.inputs['Roughness'].default_value = 0.1
-            #principled.inputs['Transmission'].default_value = 0.9
+            principled.inputs['Transmission Weight'].default_value = 0.9
             principled.inputs['IOR'].default_value = 1.45
             
             # Connect nodes
@@ -3389,7 +3389,7 @@ def create_biotechnica_spire_interior(biotechnica_objects, materials, interior_m
     principled.inputs['Base Color'].default_value = (0.9, 0.9, 0.9, 1.0)  # White
     principled.inputs['Metallic'].default_value = 0.0
     principled.inputs['Roughness'].default_value = 0.1
-    #principled.inputs['Transmission'].default_value = 0.9
+    principled.inputs['Transmission Weight'].default_value = 0.9
     principled.inputs['IOR'].default_value = 1.45
     
     # Connect nodes
@@ -3634,7 +3634,7 @@ def create_biotechnica_spire_interior(biotechnica_objects, materials, interior_m
         principled.inputs['Base Color'].default_value = (0.9, 0.9, 0.9, 1.0)  # White
         principled.inputs['Metallic'].default_value = 0.0
         principled.inputs['Roughness'].default_value = 0.1
-        #principled.inputs['Transmission'].default_value = 0.9
+        principled.inputs['Transmission Weight'].default_value = 0.9
         principled.inputs['IOR'].default_value = 1.45
         
         # Connect nodes

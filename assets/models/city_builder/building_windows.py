@@ -258,7 +258,7 @@ def create_specter_windows(specter_objects, materials, interior_materials):
             principled.inputs['Base Color'].default_value = (0.8, 0.8, 0.8, 1.0)  # Light gray
             principled.inputs['Metallic'].default_value = 0.1
             principled.inputs['Roughness'].default_value = 0.2
-            #principled.inputs['Transmission'].default_value = 0.8  # Mostly transparent
+            principled.inputs['Transmission Weight'].default_value = 0.8  # Mostly transparent
             principled.inputs['IOR'].default_value = 1.45
 
             # Connect nodes
@@ -447,7 +447,7 @@ def create_black_nexus_windows(black_nexus_objects, materials, interior_material
         principled.inputs['Base Color'].default_value = (0.02, 0.02, 0.02, 1.0)  # Very dark
         principled.inputs['Metallic'].default_value = 0.1
         principled.inputs['Roughness'].default_value = 0.3
-        #principled.inputs['Transmission'].default_value = 0.5  # Semi-transparent
+        principled.inputs['Transmission Weight'].default_value = 0.5  # Semi-transparent
         principled.inputs['IOR'].default_value = 1.45
 
         # Connect nodes
@@ -663,7 +663,7 @@ def create_wire_nest_windows(wire_nest_objects, materials, interior_materials):
         principled.inputs['Base Color'].default_value = (0.05, 0.05, 0.1, 1.0)  # Very dark blue
         principled.inputs['Metallic'].default_value = 0.1
         principled.inputs['Roughness'].default_value = 0.3
-        #principled.inputs['Transmission'].default_value = 0.4  # Semi-transparent
+        principled.inputs['Transmission Weight'].default_value = 0.4  # Semi-transparent
         principled.inputs['IOR'].default_value = 1.45
 
         # Connect nodes
@@ -914,7 +914,7 @@ def create_rust_vault_windows(rust_vault_objects, materials, interior_materials)
         principled.inputs['Base Color'].default_value = (0.3, 0.3, 0.3, 1.0)  # Gray
         principled.inputs['Metallic'].default_value = 0.0
         principled.inputs['Roughness'].default_value = 0.7
-        #principled.inputs['Transmission'].default_value = 0.3  # Slightly transparent
+        principled.inputs['Transmission Weight'].default_value = 0.3  # Slightly transparent
         principled.inputs['IOR'].default_value = 1.45
 
         noise.inputs['Scale'].default_value = 20.0
@@ -1353,7 +1353,7 @@ def create_biotechnica_windows(biotechnica_objects, materials, interior_material
         principled.inputs['Base Color'].default_value = (0.1, 0.3, 0.2, 1.0)  # Green-tinted
         principled.inputs['Metallic'].default_value = 0.3
         principled.inputs['Roughness'].default_value = 0.1
-        #principled.inputs['Transmission'].default_value = 0.8  # Mostly transparent
+        principled.inputs['Transmission Weight'].default_value = 0.8  # Mostly transparent
         principled.inputs['IOR'].default_value = 1.45
 
         # Connect nodes

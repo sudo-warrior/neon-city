@@ -334,7 +334,7 @@ def create_advanced_materials():
     principled.inputs['Base Color'].default_value = (0.1, 0.3, 0.2, 1.0)  # Green-tinted
     principled.inputs['Metallic'].default_value = 0.5
     principled.inputs['Roughness'].default_value = 0.1
-    #principled.inputs['Transmission'].default_value = 0.8  # Glass-like
+    principled.inputs['Transmission Weight'].default_value = 0.8  # Glass-like
     principled.inputs['IOR'].default_value = 1.45
     links.new(principled.outputs['BSDF'], output.inputs['Surface'])
     materials["Biotechnica_Exterior"] = biotechnica
@@ -849,7 +849,7 @@ def create_black_nexus(collections, materials, location=(-70, -50, 0), scale_fac
         principled.inputs['Base Color'].default_value = (0.2, 0.3, 0.1, 1.0) # Greenish
         principled.inputs['Metallic'].default_value = 0.0
         principled.inputs['Roughness'].default_value = 0.3
-        #principled.inputs['Transmission'].default_value = 0.8 # Translucent
+        principled.inputs['Transmission Weight'].default_value = 0.8 # Translucent
         principled.inputs['Alpha'].default_value = 0.5 # Make slightly transparent
         streak_material.blend_method = 'BLEND' # Enable alpha blending
         links.new(principled.outputs['BSDF'], output.inputs['Surface'])
@@ -1667,7 +1667,7 @@ def create_biotechnica_spire(collections, materials, location=(-80, 80, 0), scal
         principled.inputs['Base Color'].default_value = (0.0, 0.8, 0.2, 1.0)  # Bright green liquid
         principled.inputs['Metallic'].default_value = 0.0
         principled.inputs['Roughness'].default_value = 0.1
-        #principled.inputs['Transmission'].default_value = 0.9  # Mostly transparent
+        principled.inputs['Transmission Weight'].default_value = 0.9  # Mostly transparent
         principled.inputs['IOR'].default_value = 1.33  # Water-like
         # Add emission for glow
         emission = nodes.new(type='ShaderNodeEmission')
